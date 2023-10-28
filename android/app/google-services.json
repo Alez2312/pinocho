@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "445857147004",
+    "project_id": "pinocho-a3987",
+    "storage_bucket": "pinocho-a3987.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:445857147004:android:15f68a766dedcc26d881f9",
+        "android_client_info": {
+          "package_name": "com.example.pinocho"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDM4Nu6Az5Jjh3DIqdLiuqarMul1fm3Ni8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
