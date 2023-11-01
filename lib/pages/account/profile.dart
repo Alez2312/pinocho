@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pinocho/services/firebase_service_user.dart';
 
-import 'components/image_uploader.dart';
+import '../components/image_uploader.dart';
 
 class ProfilePage extends StatefulWidget {
   final String uid;
@@ -183,8 +183,12 @@ class _ProfilePageState extends State<ProfilePage> {
                 uid: widget.uid,
                 onImageSelected: (image) async {
                   setState(() => isLoading = true);
-                  await uploadDefaultProfileImage(widget.uid, image: image);
-                  setState(() => isLoading = false);
+                  String newImageUrl =
+                      await uploadDefaultProfileImage(widget.uid, image: image);
+                  setState(() {
+                    isLoading = false;
+                    userData['image'] = newImageUrl;
+                  });
                 },
               ),
             ),

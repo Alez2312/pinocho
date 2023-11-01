@@ -2,8 +2,8 @@ import 'package:csc_picker/csc_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pinocho/services/firebase_service_user.dart';
-import '../services/firebase_auth_service.dart';
-import 'home.dart';
+import '../../services/firebase_auth_service.dart';
+import '../home.dart';
 import 'login.dart';
 
 class RegisterPage extends StatelessWidget {
