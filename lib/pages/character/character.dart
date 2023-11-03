@@ -1,7 +1,9 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pinocho/pages/components/image_uploader.dart';
-import 'package:pinocho/pages/home.dart';
+import 'package:pinocho/pages/home/home.dart';
 import 'package:pinocho/services/firebase_service_character.dart';
 
 class CharactersPage extends StatefulWidget {
@@ -21,6 +23,7 @@ class _CharactersPageState extends State<CharactersPage> {
   bool isLoading = false;
   String? _imageUrl;
   String? _characterId;
+  List<String> _selectedItemIds = [];
 
   @override
   void initState() {
@@ -32,6 +35,32 @@ class _CharactersPageState extends State<CharactersPage> {
     _status = widget.character?['status'] ?? false;
     _characterId = widget.character?['id'] ??
         FirebaseFirestore.instance.collection('characters').doc().id;
+
+    // Obtener los IDs de los elementos seleccionados al iniciar la página
+    _selectedItemIds = widget.character?['items']?.cast<String>() ?? [];
+
+    // Obtener elementos disponibles al iniciar la página
+    _fetchItems();
+  }
+
+  // Función para obtener los elementos de la colección "items"
+  Future<List<DocumentSnapshot>> _fetchItems() async {
+    final itemsSnapshot =
+        await FirebaseFirestore.instance.collection('items').get();
+    final items = itemsSnapshot.docs;
+    return items;
+  }
+
+  _handleItemSelection(String itemId) {
+    setState(() {
+      if (_selectedItemIds.contains(itemId)) {
+        // Si ya está seleccionado, lo eliminamos de la lista
+        _selectedItemIds.remove(itemId);
+      } else {
+        // Si no está seleccionado, lo agregamos a la lista
+        _selectedItemIds.add(itemId);
+      }
+    });
   }
 
   @override
@@ -41,31 +70,50 @@ class _CharactersPageState extends State<CharactersPage> {
     super.dispose();
   }
 
+  // Función para guardar un personaje
   _saveCharacter() async {
-  if (_formKey.currentState!.validate()) {
-    if (_imageUrl == null) {
-      // Si no se ha seleccionado una imagen, muestra un mensaje de error
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Por favor, selecciona una imagen.'),
-        ),
-      );
-    } else {
-      if (widget.character == null) {
-        // Si es nulo, estamos agregando un nuevo personaje
-        await addCharacter(_characterId!, _nameController.text,
-            _historyController.text, _imageUrl, _status);
-      } else {
-        // Si no es nulo, estamos modificando un personaje existente
-        await updateCharacter(_characterId!, _nameController.text,
-            _historyController.text, _imageUrl, _status);
+    if (_formKey.currentState!.validate()) {
+      final characterName = _nameController.text;
+
+      if (widget.character == null ||
+          characterName != widget.character!['name']) {
+        // Si estamos agregando un nuevo personaje o modificando el nombre
+        final characterWithSameName = await getCharacterByName(characterName);
+        if (characterWithSameName != null) {
+          // Ya existe un personaje con el mismo nombre, mostrar un mensaje de error
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Ya existe un personaje con el mismo nombre.'),
+            ),
+          );
+          return; // Salir de la función sin hacer cambios
+        }
       }
-      Navigator.pop(context);
+
+      // Si se ha seleccionado una imagen, guárdala
+      if (_imageUrl != null) {
+        if (widget.character == null) {
+          // Si estamos agregando un nuevo personaje
+          await addCharacter(_characterId!, characterName,
+              _historyController.text, _imageUrl, _selectedItemIds, _status);
+        } else {
+          // Si estamos modificando un personaje existente
+          await updateCharacter(_characterId!, characterName,
+              _historyController.text, _imageUrl, _selectedItemIds, _status);
+        }
+        Navigator.pop(context); // Cerrar la página
+      } else {
+        // Si no se ha seleccionado una imagen, muestra un mensaje de error
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Por favor, selecciona una imagen.'),
+          ),
+        );
+      }
     }
   }
-}
 
-
+  // Construir la imagen del personaje con opción de carga
   Widget _buildProfileImage() {
     Size size = MediaQuery.of(context).size;
 
@@ -165,6 +213,47 @@ class _CharactersPageState extends State<CharactersPage> {
                 },
               ),
               const SizedBox(height: 16),
+              Column(
+                children: [
+                  const Text("Items:",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 8),
+                  FutureBuilder<List<DocumentSnapshot>>(
+                    future: _fetchItems(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return const Text("Error al cargar los items");
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return const Text("No hay items disponibles");
+                      } else {
+                        final items = snapshot.data;
+
+                        // Crear ChoiceChips para cada elemento
+                        return Wrap(
+                          children: items!.map((item) {
+                            final itemId = item.id;
+                            final isSelected =
+                                _selectedItemIds.contains(itemId);
+                            final itemName = item['name'] as String;
+                            return ChoiceChip(
+                              label: Text(itemName),
+                              selected: isSelected,
+                              onSelected: (selected) {
+                                _handleItemSelection(itemId);
+                              },
+                              selectedColor: Colors.purple,
+                              selectedShadowColor: Colors.purpleAccent,
+                            );
+                          }).toList(),
+                        );
+                      }
+                    },
+                  ),
+                ],
+              ),
               SwitchListTile(
                 title: const Text("Estado"),
                 value: _status,

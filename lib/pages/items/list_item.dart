@@ -1,14 +1,17 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
-import 'package:pinocho/pages/components/confirmation_dialog.dart';
-import 'package:pinocho/pages/home.dart';
+import 'package:pinocho/pages/home/home.dart';
 import 'package:pinocho/pages/items/item.dart';
 import 'package:pinocho/services/firebase_service_item.dart';
+import 'package:pinocho/services/firebase_service_character.dart';
 
 class ListItems extends StatefulWidget {
   const ListItems({Key? key}) : super(key: key);
   static String RUTA = '/list_items';
 
   @override
+  // ignore: library_private_types_in_public_api
   _ListItemsState createState() => _ListItemsState();
 }
 
@@ -19,26 +22,58 @@ class _ListItemsState extends State<ListItems> {
   }
 
   _showMyDialog(String itemId) async {
+    // Obtener la lista de personajes que están usando este elemento
+    List<String> charactersUsingItem = await getCharactersUsingItem(itemId);
+
     final bool? result = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
-        return const ConfirmationDialog(
-          title: 'Eliminar Item',
-          content: '¿Estás seguro de que quieres eliminar este item?',
+        return AlertDialog(
+          title: const Text('¿Estás seguro de que quieres eliminar este item?'),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (charactersUsingItem.isNotEmpty)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                        'Este item está siendo utilizado por los siguientes personajes:'),
+                    const SizedBox(height: 8),
+                    for (String character in charactersUsingItem)
+                      Text(character,
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                  ],
+                ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // No eliminar el elemento
+              },
+              child: const Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () async {
+                // Eliminar el elemento y quitarlo de los personajes que lo están usando
+                await deleteItem(itemId);
+                await removeItemFromCharacters(itemId, charactersUsingItem);
+                Navigator.of(context).pop(true); // Confirmar la eliminación
+              },
+              child: const Text('Eliminar'),
+            ),
+          ],
         );
       },
     );
 
     if (result != null && result) {
-      await deleteItem(itemId);
       setState(() {
-        _fetchItems();
+        getAllItems();
       });
     }
-  }
-
-  Future<List<Map<String, dynamic>>> _fetchItems() async {
-    return await getAllItems();
   }
 
   @override
@@ -59,7 +94,7 @@ class _ListItemsState extends State<ListItems> {
         backgroundColor: Colors.purple,
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: _fetchItems(),
+        future: getAllItems(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -85,10 +120,10 @@ class _ListItemsState extends State<ListItems> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => ItemsPage(
-                                        item: item))).then((_) {
+                                    builder: (context) =>
+                                        ItemsPage(item: item))).then((_) {
                               setState(() {
-                                _fetchItems();
+                                getAllItems();
                               });
                             });
                           }),
@@ -114,7 +149,7 @@ class _ListItemsState extends State<ListItems> {
             MaterialPageRoute(builder: (context) => const ItemsPage()),
           ).then((_) {
             setState(() {
-              _fetchItems();
+              getAllItems();
             });
           });
         },

@@ -165,7 +165,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ClipOval(
             child: (userData['image'] == null || userData['image'].isEmpty)
                 ? Image.asset(
-                    'assets/profileDefault.jpeg',
+                    'assets/images/profileDefault.jpeg',
                     fit: BoxFit.fitWidth,
                     width: size.width * 0.4,
                   )

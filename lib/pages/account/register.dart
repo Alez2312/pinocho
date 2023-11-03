@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pinocho/services/firebase_service_user.dart';
 import '../../services/firebase_auth_service.dart';
-import '../home.dart';
+import '../home/home.dart';
 import 'login.dart';
 
 class RegisterPage extends StatelessWidget {
@@ -62,7 +62,15 @@ class _RegisterState extends State<Register> {
       if (user != null) {
         // Usar el UID de Firebase Authentication para agregar el usuario a Firestore
         addUser(
-            user.uid, username, email, selectedGender, country!, state!, city!);
+            user.uid,
+            username,
+            email,
+            password: password,
+            selectedGender,
+            country!,
+            state!,
+            city!,
+            coins: 0);
 
         print("Usuario registrado, imagen subida y creado en Firestore");
         Navigator.pushNamed(context, HomePage.RUTA);
@@ -87,7 +95,7 @@ class _RegisterState extends State<Register> {
             width: size.width,
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/pinocho3.png'),
+                image: AssetImage('assets/images/pinocho3.png'),
                 fit: BoxFit.fill,
               ),
             ),

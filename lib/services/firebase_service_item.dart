@@ -75,7 +75,7 @@ Future<String?> uploadImage(String uid, {File? image}) async {
   if (image == null) {
     // Si no se proporciona una imagen, usa la predeterminada desde los assets
     final ByteData byteData =
-        await rootBundle.load('assets/profileDefault.jpeg');
+        await rootBundle.load('assets/images/profileDefault.jpeg');
     final Uint8List imageData =
         Uint8List.fromList(byteData.buffer.asUint8List());
     uploadTask = storageRef.putData(imageData);
@@ -88,3 +88,39 @@ Future<String?> uploadImage(String uid, {File? image}) async {
   return await storageRef.getDownloadURL();
 }
 
+// Método para consultar por nombre
+Future<Map<String, dynamic>?> getItemByName(String name) async {
+  try {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('items')
+        .where('name', isEqualTo: name)
+        .limit(1)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      final itemDoc = querySnapshot.docs.first;
+      return itemDoc.data() as Map<String, dynamic>;
+    } else {
+      return null;
+    }
+  } catch (e) {
+    print('Error al consultar el item por nombre: $e');
+    return null;
+  }
+}
+
+// Método para tomar una lista de IDs de items y devuelve los nombres correspondientes
+Future<List<String>> getItemNamesFromIDs(List<dynamic> characterItemIDs) async {
+  final itemsCollection = FirebaseFirestore.instance.collection('items');
+  final itemNames = <String>[];
+
+  for (final itemID in characterItemIDs ) {
+    final itemDoc = await itemsCollection.doc(itemID).get();
+    if (itemDoc.exists) {
+      final itemName = itemDoc['name'] as String;
+      itemNames.add(itemName);
+    }
+  }
+
+  return itemNames;
+}

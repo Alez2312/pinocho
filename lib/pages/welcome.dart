@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'login.dart';
-import 'register.dart';
+import 'account/login.dart';
+import 'account/register.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
@@ -19,7 +19,7 @@ class WelcomePage extends StatelessWidget {
             width: size.width,
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/pinocho1.png'),
+                image: AssetImage('assets/images/pinocho1.png'),
                 fit: BoxFit.fill,
               ),
             ),

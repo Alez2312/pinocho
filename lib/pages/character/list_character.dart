@@ -1,7 +1,9 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:pinocho/pages/character/character.dart';
 import 'package:pinocho/pages/components/confirmation_dialog.dart';
-import 'package:pinocho/pages/home.dart';
+import 'package:pinocho/pages/home/home.dart';
 import 'package:pinocho/services/firebase_service_character.dart';
 
 class ListCharacters extends StatefulWidget {
@@ -32,13 +34,9 @@ class _ListCharactersState extends State<ListCharacters> {
     if (result != null && result) {
       await deleteCharacter(characterId);
       setState(() {
-        _fetchCharacters();
+        getAllCharacters();
       });
     }
-  }
-
-  Future<List<Map<String, dynamic>>> _fetchCharacters() async {
-    return await getAllCharacters();
   }
 
   @override
@@ -59,7 +57,7 @@ class _ListCharactersState extends State<ListCharacters> {
         backgroundColor: Colors.purple,
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: _fetchCharacters(),
+        future: getAllCharacters(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -88,7 +86,7 @@ class _ListCharactersState extends State<ListCharacters> {
                                     builder: (context) => CharactersPage(
                                         character: character))).then((_) {
                               setState(() {
-                                _fetchCharacters();
+                                getAllCharacters();
                               });
                             });
                           }),
@@ -114,7 +112,7 @@ class _ListCharactersState extends State<ListCharacters> {
             MaterialPageRoute(builder: (context) => const CharactersPage()),
           ).then((_) {
             setState(() {
-              _fetchCharacters();
+              getAllCharacters();
             });
           });
         },

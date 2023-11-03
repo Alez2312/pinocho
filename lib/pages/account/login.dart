@@ -79,7 +79,7 @@ class _LoginState extends State<Login> {
             width: size.width,
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/pinocho.png'),
+                image: AssetImage('assets/images/pinocho.png'),
                 fit: BoxFit.cover,
               ),
             ),

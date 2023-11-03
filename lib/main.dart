@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:pinocho/pages/achievements.dart';
 import 'package:pinocho/pages/character/list_character.dart';
 import 'package:pinocho/pages/items/list_item.dart';
 import 'package:pinocho/pages/laboratory.dart';
+import 'package:pinocho/pages/claim_reward.dart';
+import 'package:pinocho/pages/rewards/list_reward.dart';
 import 'firebase_options.dart';
 
-import 'pages/home.dart';
-import 'pages/login.dart';
-import 'pages/register.dart';
+import 'pages/home/home.dart';
+import 'pages/account/login.dart';
+import 'pages/account/register.dart';
 import 'pages/welcome.dart';
 
 void main() async {
@@ -33,6 +36,9 @@ class MyApp extends StatelessWidget {
         LaboratoryPage.RUTA: (context) => const LaboratoryPage(),
         ListCharacters.RUTA: (context) => const ListCharacters(),
         ListItems.RUTA: (context) => const ListItems(),
+        Achievements.RUTA:(context) => const Achievements(),
+        ListRewards.RUTA:(context) => const ListRewards(),
+        ClaimRewards.RUTA:(context) => const ClaimRewards(),
       },
     );}
 }

@@ -1,61 +1,60 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, library_private_types_in_public_api
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pinocho/pages/components/image_uploader.dart';
-import 'package:pinocho/pages/home/home.dart';
-import 'package:pinocho/services/firebase_service_item.dart';
+import 'package:pinocho/services/firebase_service_history.dart';
 
-class ItemsPage extends StatefulWidget {
-  final Map<String, dynamic>? item;
-  const ItemsPage({Key? key, this.item}) : super(key: key);
-  static String RUTA = '/item';
+class HistoryPage extends StatefulWidget {
+  final Map<String, dynamic>? history;
+  const HistoryPage({Key? key, this.history}) : super(key: key);
+  static String RUTA = '/history';
 
   @override
-  _ItemsPageState createState() => _ItemsPageState();
+  _HistoryPageState createState() => _HistoryPageState();
 }
 
-class _ItemsPageState extends State<ItemsPage> {
+class _HistoryPageState extends State<HistoryPage> {
   final _formKey = GlobalKey<FormState>();
-  late TextEditingController _nameController;
+  late TextEditingController _titleController;
   late TextEditingController _descriptionController;
   bool _status = false;
   bool isLoading = false;
   String? _imageUrl;
-  String? _itemId;
+  String? _historyId;
 
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.item?['name']);
+    _titleController = TextEditingController(text: widget.history?['title']);
     _descriptionController =
-        TextEditingController(text: widget.item?['description']);
-    _imageUrl = widget.item?['image'];
-    _status = widget.item?['status'] ?? false;
-    _itemId = widget.item?['id'] ??
-        FirebaseFirestore.instance.collection('items').doc().id;
+        TextEditingController(text: widget.history?['description']);
+    _imageUrl = widget.history?['image'];
+    _status = widget.history?['status'] ?? false;
+    _historyId = widget.history?['id'] ??
+        FirebaseFirestore.instance.collection('histories').doc().id;
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _titleController.dispose();
     _descriptionController.dispose();
     super.dispose();
   }
 
-  // Función para guardar un item
-  _saveItem() async {
+  // Función para guardar un history
+  _saveHistory() async {
     if (_formKey.currentState!.validate()) {
-      final itemName = _nameController.text;
+      final historyName = _titleController.text;
 
-      if (widget.item == null || itemName != widget.item!['name']) {
-        // Si estamos agregando un nuevo item o modificando el nombre
-        final itemWithSameName = await getItemByName(itemName);
-        if (itemWithSameName != null) {
-          // Ya existe un item con el mismo nombre, mostrar un mensaje de error
+      if (widget.history == null || historyName != widget.history!['title']) {
+        // Si estamos agregando un nuevo history o modificando el nombre
+        final historyWithSameName = await getHistoryByTitle(historyName);
+        if (historyWithSameName != null) {
+          // Ya existe un history con el mismo nombre, mostrar un mensaje de error
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Ya existe un item con el mismo nombre.'),
+              content: Text('Ya existe un history con el mismo nombre.'),
             ),
           );
           return; // Salir de la función sin hacer cambios
@@ -64,14 +63,14 @@ class _ItemsPageState extends State<ItemsPage> {
 
       // Si se ha seleccionado una imagen, guárdala
       if (_imageUrl != null) {
-        if (widget.item == null) {
-          // Si estamos agregando un nuevo item
-          await addItem(_itemId!, itemName, _descriptionController.text,
-              _imageUrl, _status);
+        if (widget.history == null) {
+          // Si estamos agregando un nuevo history
+          await addHistory(_historyId!, historyName,
+              _descriptionController.text, _imageUrl, _status);
         } else {
-          // Si estamos modificando un item existente
-          await updateItem(_itemId!, itemName, _descriptionController.text,
-              _imageUrl, _status);
+          // Si estamos modificando un history existente
+          await updateHistory(_historyId!, historyName,
+              _descriptionController.text, _imageUrl, _status);
         }
         Navigator.pop(context); // Cerrar la página
       } else {
@@ -85,7 +84,7 @@ class _ItemsPageState extends State<ItemsPage> {
     }
   }
 
-  // Construir la imagen del item con opción de carga
+  // Construir la imagen del history con opción de carga
   Widget _buildProfileImage() {
     Size size = MediaQuery.of(context).size;
 
@@ -96,25 +95,23 @@ class _ItemsPageState extends State<ItemsPage> {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          ClipOval(
-            child: Image.network(
-              _imageUrl ??
-                  'https://campussafetyconference.com/wp-content/uploads/2020/08/iStock-476085198.jpg',
-              width: size.width * 0.4,
-              height: size.height * 0.2,
-              fit: BoxFit.cover,
-              key: UniqueKey(),
-            ),
+          Image.network(
+            _imageUrl ??
+                'https://img.freepik.com/premium-vector/default-image-icon-vector-missing-picture-page-website-design-mobile-app-no-photo-available_87543-11093.jpg',
+            width: size.width,
+            height: size.height * 0.2,
+            fit: BoxFit.fill,
+            key: UniqueKey(),
           ),
           Positioned(
             right: 0,
             bottom: 0,
             child: ImageUploader(
-              uid: _itemId!,
+              uid: _historyId!,
               onImageSelected: (image) async {
                 setState(() => isLoading = true);
                 String? uploadedImageUrl =
-                    await uploadImage(_itemId!, image: image);
+                    await uploadImage(_historyId!, image: image);
                 if (uploadedImageUrl != null) {
                   setState(() {
                     _imageUrl = uploadedImageUrl;
@@ -135,17 +132,7 @@ class _ItemsPageState extends State<ItemsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Agregar Item'),
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const HomePage()),
-                );
-              },
-              icon: const Icon(Icons.home))
-        ],
+        title: const Text('Agregar History'),
         backgroundColor: Colors.purple,
       ),
       body: Padding(
@@ -157,9 +144,9 @@ class _ItemsPageState extends State<ItemsPage> {
               _buildProfileImage(),
               const SizedBox(height: 16),
               TextFormField(
-                controller: _nameController,
+                controller: _titleController,
                 decoration: const InputDecoration(
-                  labelText: "Nombre",
+                  labelText: "Titulo",
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) {
@@ -198,7 +185,7 @@ class _ItemsPageState extends State<ItemsPage> {
               ElevatedButton(
                 style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(Colors.purple)),
-                onPressed: _saveItem,
+                onPressed: _saveHistory,
                 child: const Text("Guardar"),
               )
             ],
@@ -208,3 +195,4 @@ class _ItemsPageState extends State<ItemsPage> {
     );
   }
 }
+// Geppetto, un anciano carpintero, talla una marioneta a partir de un trozo especial de madera que él encuentra. El Nacimineto De Pinocho
