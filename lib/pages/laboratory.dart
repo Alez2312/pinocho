@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pinocho/pages/character/list_character.dart';
 import 'package:pinocho/pages/items/list_item.dart';
-import 'package:pinocho/pages/rewards/list_reward.dart';
 
 class LaboratoryPage extends StatelessWidget {
   const LaboratoryPage({Key? key}) : super(key: key);
@@ -16,11 +15,13 @@ class LaboratoryPage extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
+// Grid para mostrar opciones en la página del laboratorio.
         child: GridView.count(
           crossAxisCount: 2,
           mainAxisSpacing: 16.0,
           crossAxisSpacing: 16.0,
           children: [
+// Tarjetas personalizadas para diferentes secciones.            
             customCard(
               'Personaje',
               'descripción Personaje',
@@ -37,20 +38,13 @@ class LaboratoryPage extends StatelessWidget {
                 Navigator.pushNamed(context, ListItems.RUTA);
               },
             ),
-            customCard(
-              'Recompensa',
-              'description Reward',
-              Colors.green,
-              () {
-                Navigator.pushNamed(context, ListRewards.RUTA);
-              },
-            ),
           ],
         ),
       ),
     );
   }
 
+// Método para crear tarjetas personalizadas.
   Widget customCard(
     String title,
     String description,
@@ -60,6 +54,7 @@ class LaboratoryPage extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Card(
+// Diseño de la tarjeta con título, descripción y estilo personalizado.
         elevation: 4,
         color: color,
         child: Padding(

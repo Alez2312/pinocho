@@ -5,7 +5,7 @@ import 'package:pinocho/pages/character/list_character.dart';
 import 'package:pinocho/pages/items/list_item.dart';
 import 'package:pinocho/pages/laboratory.dart';
 import 'package:pinocho/pages/claim_reward.dart';
-import 'package:pinocho/pages/rewards/list_reward.dart';
+import 'package:pinocho/pages/music.dart';
 import 'firebase_options.dart';
 
 import 'pages/home/home.dart';
@@ -37,8 +37,8 @@ class MyApp extends StatelessWidget {
         ListCharacters.RUTA: (context) => const ListCharacters(),
         ListItems.RUTA: (context) => const ListItems(),
         Achievements.RUTA:(context) => const Achievements(),
-        ListRewards.RUTA:(context) => const ListRewards(),
         ClaimRewards.RUTA:(context) => const ClaimRewards(),
+        MusicPage.RUTA: (context) => const MusicPage(),
       },
     );}
 }

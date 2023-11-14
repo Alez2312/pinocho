@@ -20,7 +20,7 @@ Future<void> addReward(
 // Método para actualizar una recompensa
 Future<void> updateReward(
     String uid, String title, int requiredCoins, bool status) async {
-  FirebaseFirestore.instance.collection('rewards').doc(uid).update({
+  db.collection('rewards').doc(uid).update({
     'title': title,
     'requiredCoins': requiredCoins,
     'status': status,
@@ -44,7 +44,7 @@ Future<List<Map<String, dynamic>>> getAllRewards() async {
 // Método para consultar por nombre
 Future<Map<String, dynamic>?> getRewardByName(String name) async {
   try {
-    final querySnapshot = await FirebaseFirestore.instance
+    final querySnapshot = await db
         .collection('rewards')
         .where('name', isEqualTo: name)
         .limit(1)
@@ -80,5 +80,5 @@ Future<Map<String, dynamic>?> getRewardsByID(String uid) async {
 
 // Método para eliminar un personaje
 Future<void> deleteReward(String uid) async {
-  FirebaseFirestore.instance.collection('rewards').doc(uid).delete();
+  db.collection('rewards').doc(uid).delete();
 }

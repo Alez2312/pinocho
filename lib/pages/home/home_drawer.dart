@@ -1,9 +1,11 @@
+// ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
 import 'package:pinocho/pages/account/profile.dart';
 import 'package:pinocho/pages/achievements.dart';
 import 'package:pinocho/pages/claim_reward.dart';
 import 'package:pinocho/pages/components/confirmation_dialog.dart';
+import 'package:pinocho/pages/components/title_button.dart';
 import 'package:pinocho/pages/laboratory.dart';
 import 'package:pinocho/pages/settings.dart';
 import 'package:pinocho/pages/welcome.dart';
@@ -18,13 +20,7 @@ class DrawerContent extends StatelessWidget {
     required this.uid,
   }) : super(key: key);
 
-  Widget _drawerTile(BuildContext context, String title, VoidCallback onTap) {
-    return ListTile(
-      title: Text(title),
-      onTap: onTap,
-    );
-  }
-
+// Método para construir el encabezado del Drawer con información del usuario.
   UserAccountsDrawerHeader _userDrawerHeader(Map<String, dynamic> userData) {
     return UserAccountsDrawerHeader(
       currentAccountPicture: CircleAvatar(
@@ -58,7 +54,7 @@ class DrawerContent extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: [
           _userDrawerHeader(userData),
-          _drawerTile(
+          TitleButton(
             context,
             'Ver Perfil',
             () => Navigator.push(
@@ -68,9 +64,9 @@ class DrawerContent extends StatelessWidget {
               ),
             ),
           ),
-          _drawerTile(context, 'Laboratorio',
+          TitleButton(context, 'Laboratorio',
               () => Navigator.pushNamed(context, LaboratoryPage.RUTA)),
-          _drawerTile(
+          TitleButton(
               context,
               'Configuración',
               () => Navigator.push(
@@ -78,20 +74,21 @@ class DrawerContent extends StatelessWidget {
                     MaterialPageRoute(
                         builder: (context) => const SettingsPage()),
                   )),
-          _drawerTile(context, 'Logros',
+          TitleButton(context, 'Logros',
               () => Navigator.pushNamed(context, Achievements.RUTA)),
-          _drawerTile(context, 'Recompensas',
+          TitleButton(context, 'Recompensas',
               () => Navigator.pushNamed(context, ClaimRewards.RUTA)),
-          _drawerTile(
+          TitleButton(
             context,
             'Salir',
             () => _showMyDialogExit(context, ""),
-          ),
+          )
         ],
       ),
     );
   }
 
+// Método para mostrar un diálogo de confirmación antes de salir de la aplicación.
   _showMyDialogExit(BuildContext context, String? historyId) async {
     final bool? result = await showDialog<bool>(
       context: context,

@@ -1,8 +1,8 @@
+// ignore_for_file: constant_identifier_names
+
 import 'package:flutter/material.dart';
-import 'package:pinocho/pages/components/bubble.dart';
 import 'package:pinocho/pages/components/confirmation_dialog.dart';
-import 'package:pinocho/pages/rewards/reward.dart';
-import 'package:pinocho/services/firebase_service_reward.dart';
+import 'package:pinocho/services/firebase_service_item.dart';
 import 'package:pinocho/services/firebase_service_user.dart';
 
 class ClaimRewards extends StatefulWidget {
@@ -23,6 +23,7 @@ class _ClaimRewardsState extends State<ClaimRewards> {
     _loadCoins();
   }
 
+// Método para cargar las monedas del usuario.
   Future<void> _loadCoins() async {
     final loadedCoins = await getCoins();
     setState(() {
@@ -30,13 +31,14 @@ class _ClaimRewardsState extends State<ClaimRewards> {
     });
   }
 
-  Future<void> _showMyDialog(String? titleReward, int requiredCoins) async {
+// Método para mostrar un diálogo de confirmación al reclamar una recompensa.
+  Future<void> _showMyDialog(String? titleReward, int requiredCoins, String uid) async {
     final bool? result = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return ConfirmationDialog(
           title: 'Recompensa',
-          content: 'Felicidades has reclamado $titleReward',
+          content: '¿Seguro que quieres reclamar $titleReward?',
         );
       },
     );
@@ -45,7 +47,8 @@ class _ClaimRewardsState extends State<ClaimRewards> {
       if (coins != null && coins! >= requiredCoins) {
         final newCoins = coins! - requiredCoins;
         await updateCoins(newCoins);
-        _loadCoins(); // Actualiza las monedas después de reclamar
+        _loadCoins(); // Actualiza las monedas después de reclamar una recompensa
+        updateItemStatus(uid, true);
       }
     }
   }
@@ -65,7 +68,7 @@ class _ClaimRewardsState extends State<ClaimRewards> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
-                  'Monedas: ',
+                  'Tus monedas: ',
                   style: TextStyle(color: Colors.black, fontSize: 18),
                 ),
                 Text(
@@ -77,7 +80,7 @@ class _ClaimRewardsState extends State<ClaimRewards> {
           ),
           Expanded(
             child: FutureBuilder<List<Map<String, dynamic>>>(
-              future: getAllRewards(),
+              future: getAllItems(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
@@ -92,20 +95,19 @@ class _ClaimRewardsState extends State<ClaimRewards> {
                     itemCount: rewards.length,
                     itemBuilder: (context, index) {
                       final reward = rewards[index];
-                      final requiredCoins = reward['requiredCoins'] as int;
+                      final requiredCoins = reward['requiredCoins'];
                       final canClaim = requiredCoins <= (coins ?? 0);
-
                       return ListTile(
-                        title: Text(reward['title'] ?? ''),
-                        subtitle: Text('$requiredCoins monedas'),
+                        title: Text(reward['name'] ?? ''),
+                        subtitle: Text('monedas: $requiredCoins'),
                         trailing: canClaim
                             ? TextButton(
                                 style: ButtonStyle(
                                   backgroundColor:
-                                      MaterialStateProperty.all(Colors.blue),
+                                      MaterialStateProperty.all(Colors.purple),
                                 ),
                                 onPressed: () {
-                                  _showMyDialog(reward['title'], requiredCoins);
+                                  _showMyDialog(reward['name'], requiredCoins, reward['id']);
                                 },
                                 child: const Text(
                                   "Reclamar",
@@ -113,7 +115,7 @@ class _ClaimRewardsState extends State<ClaimRewards> {
                                 ),
                               )
                             : const Text('Monedas insuficientes'),
-                      );
+                        );
                     },
                   );
                 }

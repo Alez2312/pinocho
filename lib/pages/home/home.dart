@@ -24,6 +24,7 @@ class _HomePageState extends State<HomePage> {
     uid = getUID();
   }
 
+// Método para construir el contenido del Drawer.
   DrawerContent drawerContent(Map<String, dynamic> userData) {
     return DrawerContent(userData: userData, uid: uid);
   }

@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, library_private_types_in_public_api, non_constant_identifier_names
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -65,12 +65,13 @@ class _CharactersPageState extends State<CharactersPage> {
 
   @override
   void dispose() {
+// Limpieza de controladores cuando el widget se destruye.
     _nameController.dispose();
     _historyController.dispose();
     super.dispose();
   }
 
-  // Función para guardar un personaje
+// Función para guardar un personaje
   _saveCharacter() async {
     if (_formKey.currentState!.validate()) {
       final characterName = _nameController.text;
@@ -182,6 +183,7 @@ class _CharactersPageState extends State<CharactersPage> {
           key: _formKey,
           child: ListView(
             children: [
+// Construcción de la imagen, campos de texto y otras opciones del formulario.
               _buildProfileImage(),
               const SizedBox(height: 16),
               TextFormField(
@@ -230,23 +232,26 @@ class _CharactersPageState extends State<CharactersPage> {
                         return const Text("No hay items disponibles");
                       } else {
                         final items = snapshot.data;
-
                         // Crear ChoiceChips para cada elemento
                         return Wrap(
+                          spacing: 10.0,
                           children: items!.map((item) {
                             final itemId = item.id;
                             final isSelected =
                                 _selectedItemIds.contains(itemId);
                             final itemName = item['name'] as String;
-                            return ChoiceChip(
-                              label: Text(itemName),
-                              selected: isSelected,
-                              onSelected: (selected) {
-                                _handleItemSelection(itemId);
-                              },
-                              selectedColor: Colors.purple,
-                              selectedShadowColor: Colors.purpleAccent,
-                            );
+                            final itemStatus = item['status'];
+                            return itemStatus == true
+                                ? ChoiceChip(
+                                    label: Text(itemName),
+                                    selected: isSelected,
+                                    onSelected: (selected) {
+                                      _handleItemSelection(itemId);
+                                    },
+                                    selectedColor: Colors.purple,
+                                    selectedShadowColor: Colors.purpleAccent,
+                                  )
+                                : const SizedBox.shrink();
                           }).toList(),
                         );
                       }

@@ -20,6 +20,7 @@ class _ListCharactersState extends State<ListCharacters> {
     super.initState();
   }
 
+// Método para mostrar un diálogo de confirmación antes de eliminar un personaje.
   _showMyDialog(String characterId) async {
     final bool? result = await showDialog<bool>(
       context: context,
@@ -57,6 +58,7 @@ class _ListCharactersState extends State<ListCharacters> {
         backgroundColor: Colors.purple,
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
+// FutureBuilder para cargar y mostrar los personajes desde una fuente asíncrona.
         future: getAllCharacters(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {

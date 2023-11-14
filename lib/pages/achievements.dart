@@ -20,6 +20,7 @@ class AchievementsState extends State<Achievements> {
     loadUserAchievements();
   }
 
+// Método para cargar los logros del usuario.
   Future<void> loadUserAchievements() async {
     final uid = getUID();
     final achievements = await getAchievementsUser(uid!);

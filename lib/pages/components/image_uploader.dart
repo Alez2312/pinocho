@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -7,7 +9,7 @@ class ImageUploader extends StatefulWidget {
   final String uid;
   final Function(File image) onImageSelected;
 
-  const ImageUploader({required this.uid, required this.onImageSelected});
+  const ImageUploader({super.key, required this.uid, required this.onImageSelected});
 
   @override
   _ImageUploaderState createState() => _ImageUploaderState();
@@ -16,6 +18,7 @@ class ImageUploader extends StatefulWidget {
 class _ImageUploaderState extends State<ImageUploader> {
   final picker = ImagePicker();
 
+// Método para mostrar un diálogo con opciones para elegir imagen.
   _showChoiceDialog(BuildContext context) {
     return showDialog(
         context: context,
@@ -48,6 +51,7 @@ class _ImageUploaderState extends State<ImageUploader> {
         });
   }
 
+// Widget para cada opción en el diálogo (galería o cámara).
   _optionItem(
       BuildContext context, String title, ImageSource source, IconData icon) {
     return ListTile(
@@ -60,6 +64,7 @@ class _ImageUploaderState extends State<ImageUploader> {
     );
   }
 
+// Método para seleccionar una imagen de la galería o cámara.
   _pickImage(BuildContext context, ImageSource source) async {
     final pickedFile = await picker.pickImage(source: source);
     if (pickedFile != null) {

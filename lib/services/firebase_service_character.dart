@@ -7,9 +7,9 @@ import 'package:flutter/services.dart';
 FirebaseFirestore db = FirebaseFirestore.instance;
 
 // Método para agregar un nuevo personaje
-Future<void> addCharacter(
-    String uid, String name, String history, String? image, List<String> items, bool status) async {
-  FirebaseFirestore.instance.collection('characters').doc(uid).set({
+Future<void> addCharacter(String uid, String name, String history,
+    String? image, List<String> items, bool status) async {
+  db.collection('characters').doc(uid).set({
     'name': name,
     'history': history,
     'image': image,
@@ -41,7 +41,7 @@ Future<List<Map<String, dynamic>>> getAllCharacters() async {
 
   for (DocumentSnapshot doc in querySnapshot.docs) {
     Map<String, dynamic> characterData = doc.data() as Map<String, dynamic>;
-    characterData['id'] = doc.id;  // Agregar el ID del documento a los datos
+    characterData['id'] = doc.id; // Agregar el ID del documento a los datos
     characters.add(characterData);
   }
 
@@ -50,13 +50,13 @@ Future<List<Map<String, dynamic>>> getAllCharacters() async {
 
 // Método para eliminar un personaje
 Future<void> deleteCharacter(String uid) async {
-  FirebaseFirestore.instance.collection('characters').doc(uid).delete();
+  db.collection('characters').doc(uid).delete();
 }
 
 // Método para actualizar un personaje
-Future<void> updateCharacter(
-    String uid, String name, String history, String? image, List<String> items, bool status) async {
-  FirebaseFirestore.instance.collection('characters').doc(uid).update({
+Future<void> updateCharacter(String uid, String name, String history,
+    String? image, List<String> items, bool status) async {
+  db.collection('characters').doc(uid).update({
     'name': name,
     'history': history,
     'image': image,
@@ -93,7 +93,7 @@ Future<String?> uploadImage(String uid, {File? image}) async {
 // Método para consultar por nombre
 Future<Map<String, dynamic>?> getCharacterByName(String name) async {
   try {
-    final querySnapshot = await FirebaseFirestore.instance
+    final querySnapshot = await db
         .collection('characters')
         .where('name', isEqualTo: name)
         .limit(1)
@@ -119,7 +119,7 @@ Future<List<String>> getCharactersUsingItem(String itemId) async {
   // y agrega sus nombres a la lista charactersUsingItem
 
   // Ejemplo de consulta (debes adaptarlo a tu estructura de datos)
-  QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+  QuerySnapshot querySnapshot = await db
       .collection('characters')
       .where('items', arrayContains: itemId)
       .get();
@@ -138,7 +138,7 @@ Future<void> removeItemFromCharacters(
 
   for (String characterName in charactersUsingItem) {
     // Consulta la base de datos para obtener el personaje por nombre
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+    QuerySnapshot querySnapshot = await db
         .collection('characters')
         .where('name', isEqualTo: characterName)
         .limit(1)
@@ -147,13 +147,13 @@ Future<void> removeItemFromCharacters(
     if (querySnapshot.docs.isNotEmpty) {
       DocumentSnapshot characterDoc = querySnapshot.docs.first;
       String characterId = characterDoc.id;
-      
+
       // Elimina el elemento de la lista de items del personaje
       List<String> items = List.from(characterDoc['items'] as List<dynamic>);
       items.remove(itemId);
 
       // Actualiza la lista de items del personaje en la base de datos
-      await FirebaseFirestore.instance
+      await db
           .collection('characters')
           .doc(characterId)
           .update({'items': items});

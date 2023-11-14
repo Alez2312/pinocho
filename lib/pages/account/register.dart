@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:csc_picker/csc_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +26,7 @@ class Register extends StatefulWidget {
   State<Register> createState() => _RegisterState();
 }
 
+// Enum para manejar la selección del género del usuario.
 enum SelectedGender { Masculino, Femenino }
 
 class _RegisterState extends State<Register> {
@@ -44,7 +47,9 @@ class _RegisterState extends State<Register> {
     _selectedGender = null;
   }
 
+// Método para registrar un nuevo usuario y crear su perfil.
   void _registerAndCreateProfile() async {
+// Obtención de valores de los campos de texto y selección de género.
     String username = _usernameController.text;
     String email = _emailController.text;
     String password = _passwordController.text;
@@ -72,16 +77,20 @@ class _RegisterState extends State<Register> {
             city!,
             coins: 0);
 
-        print("Usuario registrado, imagen subida y creado en Firestore");
         Navigator.pushNamed(context, HomePage.RUTA);
       } else {
-        print("Error al registrar el usuario");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Error al registrar el usuario."),
+          ),
+        );
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+// Obtiene las dimensiones de la pantalla.
     Size size = MediaQuery.of(context).size;
     TextStyle commonTextStyle = const TextStyle(
       color: Colors.black,
@@ -90,6 +99,7 @@ class _RegisterState extends State<Register> {
     return Scaffold(
       body: Stack(
         children: [
+// Fondo de la pantalla de registro.
           Container(
             height: size.height,
             width: size.width,
@@ -100,6 +110,7 @@ class _RegisterState extends State<Register> {
               ),
             ),
           ),
+// Contenido central del formulario de registro.
           Center(
             child: Padding(
               padding: const EdgeInsets.all(16.0),

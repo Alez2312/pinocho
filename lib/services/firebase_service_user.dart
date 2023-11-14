@@ -9,6 +9,7 @@ FirebaseFirestore db = FirebaseFirestore.instance;
 
 FirebaseAuth _auth = FirebaseAuth.instance;
 
+// Método para obtener todos los usuarios.
 Future<List> getUsers() async {
   List users = [];
   CollectionReference collectionReference = db.collection('users');
@@ -31,7 +32,7 @@ String? getUID() {
 Future<void> addUser(String uid, String username, String email,
     String selectedGender, String country, String department, String city,
     {String? password, String? image, int? coins}) async {
-  FirebaseFirestore.instance.collection('users').doc(uid).set({
+  db.collection('users').doc(uid).set({
     'username': username,
     'email': email,
     'password': password,
@@ -47,7 +48,7 @@ Future<void> addUser(String uid, String username, String email,
 // Obtener la cantidad actual de monedas del usuario
 Future<int> getCoins() async {
   final documentSnapshot =
-      await FirebaseFirestore.instance.collection('users').doc(currentUserId).get();
+      await db.collection('users').doc(currentUserId).get();
 
   if (documentSnapshot.exists) {
     final data = documentSnapshot.data() as Map<String, dynamic>;
@@ -61,10 +62,11 @@ Future<int> getCoins() async {
 
 // Actualizar monedas de un usuario
 Future<void> updateCoins(int newCoins) async {
-  await FirebaseFirestore.instance.collection('users').doc(currentUserId).update({
+  await db.collection('users').doc(currentUserId).update({
     'coins': newCoins,
   });
 }
+
 
 // Obtener datos de un usuario específico basado en su id
 Future<Map<String, dynamic>> getUserByID(String uid) async {
@@ -99,7 +101,7 @@ Future<String> uploadDefaultProfileImage(String uid, {File? image}) async {
   }
   final String downloadUrl = await storageRef.getDownloadURL();
 
-  await FirebaseFirestore.instance.collection('users').doc(uid).update({
+  await db.collection('users').doc(uid).update({
     'image': downloadUrl,
   });
 

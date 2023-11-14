@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, non_constant_identifier_names, library_private_types_in_public_api
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +19,7 @@ class _ItemsPageState extends State<ItemsPage> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   late TextEditingController _descriptionController;
+  late TextEditingController _requiredCoinsController;
   bool _status = false;
   bool isLoading = false;
   String? _imageUrl;
@@ -30,6 +31,8 @@ class _ItemsPageState extends State<ItemsPage> {
     _nameController = TextEditingController(text: widget.item?['name']);
     _descriptionController =
         TextEditingController(text: widget.item?['description']);
+    _requiredCoinsController =
+        TextEditingController(text: widget.item?['requiredCoins'].toString());
     _imageUrl = widget.item?['image'];
     _status = widget.item?['status'] ?? false;
     _itemId = widget.item?['id'] ??
@@ -40,6 +43,7 @@ class _ItemsPageState extends State<ItemsPage> {
   void dispose() {
     _nameController.dispose();
     _descriptionController.dispose();
+    _requiredCoinsController.dispose();
     super.dispose();
   }
 
@@ -47,6 +51,8 @@ class _ItemsPageState extends State<ItemsPage> {
   _saveItem() async {
     if (_formKey.currentState!.validate()) {
       final itemName = _nameController.text;
+      final itemDescription = _descriptionController.text;
+      final coinValue = int.parse(_requiredCoinsController.text);
 
       if (widget.item == null || itemName != widget.item!['name']) {
         // Si estamos agregando un nuevo item o modificando el nombre
@@ -66,12 +72,12 @@ class _ItemsPageState extends State<ItemsPage> {
       if (_imageUrl != null) {
         if (widget.item == null) {
           // Si estamos agregando un nuevo item
-          await addItem(_itemId!, itemName, _descriptionController.text,
-              _imageUrl, _status);
+          await addItem(_itemId!, itemName, itemDescription, _imageUrl,
+              coinValue, _status);
         } else {
           // Si estamos modificando un item existente
-          await updateItem(_itemId!, itemName, _descriptionController.text,
-              _imageUrl, _status);
+          await updateItem(_itemId!, itemName, itemDescription, _imageUrl,
+              coinValue, _status);
         }
         Navigator.pop(context); // Cerrar la página
       } else {
@@ -180,6 +186,21 @@ class _ItemsPageState extends State<ItemsPage> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Por favor, introduce una descripción';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _requiredCoinsController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: "Cantidad para reclamar la recompensa",
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor, introduce una cantidad';
                   }
                   return null;
                 },

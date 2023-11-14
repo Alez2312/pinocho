@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class Bubble extends StatelessWidget {
   final double radius;
 
-  const Bubble(this.radius);
+  const Bubble(this.radius, {super.key});
 
   @override
   Widget build(BuildContext context) {

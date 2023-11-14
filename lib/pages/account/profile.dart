@@ -31,18 +31,20 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
+// Inicialización y obtención de datos del usuario desde Firestore.
     _userDoc =
         FirebaseFirestore.instance.collection('users').doc(widget.uid).get();
     _userDoc.then((doc) {
       var userData = doc.data() as Map<String, dynamic>;
+// Actualización de los datos del usuario.
       _nameController.text = userData['username'];
       _emailController.text = userData['email'];
       _genderController.text = userData['gender'];
       countryValue = userData['country'];
       stateValue = userData['department'];
       cityValue = userData['city'];
+      
     });
-
     setState(() {
       _userDoc =
           FirebaseFirestore.instance.collection('users').doc(widget.uid).get();
@@ -50,6 +52,7 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
+// Método para actualizar el perfil del usuario.
   _updateProfile() async {
     String? country = countryValue;
     String? state = stateValue;
@@ -76,6 +79,7 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
+// Método para definir el estilo de los campos de texto.
   TextStyle styleTextFormField() {
     return const TextStyle(
       fontSize: 20,
@@ -84,6 +88,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+// Método para crear campos de texto personalizados.
   customTextFormField(TextEditingController controller, String label,
       {bool isEditable = true}) {
     return TextFormField(
@@ -121,6 +126,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+// Método para construir el contenido principal de la página.
   FutureBuilder<DocumentSnapshot<Object?>> bodyContent() {
     Size size = MediaQuery.of(context).size;
     return FutureBuilder<DocumentSnapshot>(
@@ -157,6 +163,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+// Método para construir la imagen del perfil.
   _buildProfileImage(Size size, Map<String, dynamic> userData) {
     return Center(
       child: Stack(
@@ -197,6 +204,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+// Método para construir los campos de formulario adicionales.
   _buildFormFields(Map<String, dynamic> userData) {
     if (isEditing) {
       return [
@@ -267,6 +275,7 @@ class _ProfilePageState extends State<ProfilePage> {
     ];
   }
 
+// Método para construir el botón de guardar cambios.
   _buildSaveButton() {
     return TextButton(
       onPressed: _updateProfile,

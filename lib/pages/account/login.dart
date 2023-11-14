@@ -1,3 +1,5 @@
+
+
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -31,22 +33,28 @@ class _LoginState extends State<Login> {
   bool _passwordError = false;
   bool _isPasswordVisible = false;
 
+// Maneja el proceso de inicio de sesión.
   void _handleLogin() async {
     String email = _emailController.text;
     String password = _passwordController.text;
 
+// Verifica si los campos están vacíos y actualiza el estado de los errores.
     if (email.isEmpty || password.isEmpty) {
+      
       setState(() {
         _emailError = email.isEmpty;
         _passwordError = password.isEmpty;
       });
       return;
     }
+
+// Intenta iniciar sesión y navega a la página de inicio si tiene éxito.
     User? user = await _auth.login(email, password);
 
     if (user != null) {
       Navigator.pushReplacementNamed(context, '/home');
     } else {
+// Muestra un diálogo de error si falla el inicio de sesión.
       showDialog(
         context: context,
         builder: (context) {
@@ -70,10 +78,12 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+// Obtiene las dimensiones de la pantalla.
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       body: Stack(
         children: [
+// Fondo de la pantalla de inicio de sesión.
           Container(
             height: size.height,
             width: size.width,
@@ -84,6 +94,7 @@ class _LoginState extends State<Login> {
               ),
             ),
           ),
+// Contenedor para los campos de texto y botones.
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(

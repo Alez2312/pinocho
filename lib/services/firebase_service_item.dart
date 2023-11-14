@@ -7,11 +7,12 @@ import 'package:flutter/services.dart';
 FirebaseFirestore db = FirebaseFirestore.instance;
 
 // Método para agregar un nuevo item
-Future<void> addItem(
-    String uid, String name, String description, String? image, bool status) async {
-  FirebaseFirestore.instance.collection('items').doc(uid).set({
+Future<void> addItem(String uid, String name, String description, String? image,
+    int requiredCoins, bool status) async {
+  db.collection('items').doc(uid).set({
     'name': name,
     'description': description,
+    'requiredCoins': requiredCoins,
     'image': image,
     'status': status,
   });
@@ -40,7 +41,7 @@ Future<List<Map<String, dynamic>>> getAllItems() async {
 
   for (DocumentSnapshot doc in querySnapshot.docs) {
     Map<String, dynamic> ItemData = doc.data() as Map<String, dynamic>;
-    ItemData['id'] = doc.id;  // Agregar el ID del documento a los datos
+    ItemData['id'] = doc.id; // Agregar el ID del documento a los datos
     items.add(ItemData);
   }
 
@@ -49,26 +50,30 @@ Future<List<Map<String, dynamic>>> getAllItems() async {
 
 // Método para eliminar un item
 Future<void> deleteItem(String uid) async {
-  FirebaseFirestore.instance.collection('items').doc(uid).delete();
+  db.collection('items').doc(uid).delete();
 }
 
 // Método para actualizar un item
-Future<void> updateItem(
-    String uid, String name, String description, String? image, bool status) async {
-  FirebaseFirestore.instance.collection('items').doc(uid).update({
+Future<void> updateItem(String uid, String name, String description,
+    String? image, int requiredCoins, bool status) async {
+  db.collection('items').doc(uid).update({
     'name': name,
     'description': description,
+    'requiredCoins': requiredCoins,
     'image': image,
     'status': status,
   });
 }
 
+// Método para actualizar el estado de un item
+Future<void> updateItemStatus(String uid, bool status) async {
+  db.collection('items').doc(uid).update({'status': status});
+}
+
 // Método para subir una imagen de un item
 Future<String?> uploadImage(String uid, {File? image}) async {
-  final Reference storageRef = FirebaseStorage.instance
-      .ref()
-      .child('items_images')
-      .child('$uid.jpeg');
+  final Reference storageRef =
+      FirebaseStorage.instance.ref().child('items_images').child('$uid.jpeg');
 
   UploadTask uploadTask;
   // Cargar la imagen
@@ -91,7 +96,7 @@ Future<String?> uploadImage(String uid, {File? image}) async {
 // Método para consultar por nombre
 Future<Map<String, dynamic>?> getItemByName(String name) async {
   try {
-    final querySnapshot = await FirebaseFirestore.instance
+    final querySnapshot = await db
         .collection('items')
         .where('name', isEqualTo: name)
         .limit(1)
@@ -111,10 +116,10 @@ Future<Map<String, dynamic>?> getItemByName(String name) async {
 
 // Método para tomar una lista de IDs de items y devuelve los nombres correspondientes
 Future<List<String>> getItemNamesFromIDs(List<dynamic> characterItemIDs) async {
-  final itemsCollection = FirebaseFirestore.instance.collection('items');
+  final itemsCollection = db.collection('items');
   final itemNames = <String>[];
 
-  for (final itemID in characterItemIDs ) {
+  for (final itemID in characterItemIDs) {
     final itemDoc = await itemsCollection.doc(itemID).get();
     if (itemDoc.exists) {
       final itemName = itemDoc['name'] as String;

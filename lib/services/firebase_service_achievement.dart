@@ -14,25 +14,10 @@ Future<void> addAchievement(String uid, Map<String, bool> achievements) async {
   }
 }
 
-Future<Map<String, bool>> getAchievements(String uid) async {
-  try {
-    final doc = await db.collection('achievements').doc(uid).get();
-    if (doc.exists) {
-      final data = doc.data();
-      if (data != null && data['achievements'] is Map) {
-        return Map<String, bool>.from(data['achievements']);
-      }
-    }
-    return {};
-  } catch (e) {
-    print("Error al obtener los logros: $e");
-    return {};
-  }
-}
-
+// Método para obtener todos los logros
 Future<Map<String, bool>> getAchievementsUser(String uid) async {
   try {
-    final doc = await FirebaseFirestore.instance.collection('achievements').doc(uid).get();
+    final doc = await db.collection('achievements').doc(uid).get();
     if (doc.exists) {
       final data = doc.data();
       if (data != null && data['achievements'] is Map) {
@@ -78,12 +63,12 @@ Future<List<Map<String, dynamic>>> getAllAchievements() async {
 
 // Método para eliminar un logro
 Future<void> deleteAchievements(String uid) async {
-  FirebaseFirestore.instance.collection('achievements').doc(uid).delete();
+  db.collection('achievements').doc(uid).delete();
 }
 
 // Método para actualizar un logro
 Future<void> updateAchievements(String uid, String title, bool status) async {
-  FirebaseFirestore.instance.collection('achievements').doc(uid).update({
+  db.collection('achievements').doc(uid).update({
     'title': title,
     'status': status,
   });

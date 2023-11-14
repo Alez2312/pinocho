@@ -20,7 +20,8 @@ class _HistoryPageState extends State<HistoryPage> {
   late TextEditingController _descriptionController;
   bool _status = false;
   bool isLoading = false;
-  String? _imageUrl;
+  String? _greyImageURL;
+  String? _colorImageURL;
   String? _historyId;
 
   @override
@@ -29,7 +30,8 @@ class _HistoryPageState extends State<HistoryPage> {
     _titleController = TextEditingController(text: widget.history?['title']);
     _descriptionController =
         TextEditingController(text: widget.history?['description']);
-    _imageUrl = widget.history?['image'];
+    _greyImageURL = widget.history?['greyImageURL'];
+    _colorImageURL = widget.history?['colorImageURL'];
     _status = widget.history?['status'] ?? false;
     _historyId = widget.history?['id'] ??
         FirebaseFirestore.instance.collection('histories').doc().id;
@@ -62,15 +64,25 @@ class _HistoryPageState extends State<HistoryPage> {
       }
 
       // Si se ha seleccionado una imagen, guárdala
-      if (_imageUrl != null) {
+      if (_greyImageURL != null && _colorImageURL != null) {
         if (widget.history == null) {
           // Si estamos agregando un nuevo history
-          await addHistory(_historyId!, historyName,
-              _descriptionController.text, _imageUrl, _status);
+          await addHistory(
+              _historyId!,
+              historyName,
+              _descriptionController.text,
+              _greyImageURL,
+              _colorImageURL,
+              _status);
         } else {
           // Si estamos modificando un history existente
-          await updateHistory(_historyId!, historyName,
-              _descriptionController.text, _imageUrl, _status);
+          await updateHistory(
+              _historyId!,
+              historyName,
+              _descriptionController.text,
+              _greyImageURL,
+              _colorImageURL,
+              _status);
         }
         Navigator.pop(context); // Cerrar la página
       } else {
@@ -85,42 +97,103 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 
   // Construir la imagen del history con opción de carga
-  Widget _buildProfileImage() {
+  _buildProfileImage() {
     Size size = MediaQuery.of(context).size;
-
     if (isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
     return Center(
-      child: Stack(
-        alignment: Alignment.center,
+      child: Column(
         children: [
-          Image.network(
-            _imageUrl ??
-                'https://img.freepik.com/premium-vector/default-image-icon-vector-missing-picture-page-website-design-mobile-app-no-photo-available_87543-11093.jpg',
-            width: size.width,
-            height: size.height * 0.2,
-            fit: BoxFit.fill,
-            key: UniqueKey(),
+          Container(
+            decoration: BoxDecoration(
+                border: Border.all(color: Colors.black, width: 2),
+                borderRadius: BorderRadius.circular(20)),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                _greyImageURL != null
+                    ? Image.network(
+                        _greyImageURL!,
+                        width: size.width,
+                        height: size.height * 0.2,
+                        fit: BoxFit.fill,
+                        key: UniqueKey(),
+                      )
+                    : Image.asset(
+                        "assets/images/NoImageGris.png",
+                        width: size.width,
+                        height: size.height * 0.2,
+                        fit: BoxFit.fill,
+                        key: UniqueKey(),
+                      ),
+                Positioned(
+                  right: 0,
+                  bottom: 0,
+                  child: ImageUploader(
+                    uid: _historyId!,
+                    onImageSelected: (image) async {
+                      setState(() => isLoading = true);
+                      String? uploadedImageUrl =
+                          await uploadImage(_historyId!, image: image, isGreyImage: true);
+                      if (uploadedImageUrl != null) {
+                        setState(() {
+                          _greyImageURL = uploadedImageUrl;
+                          isLoading = false;
+                        });
+                      } else {
+                        setState(() => isLoading = false);
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
-          Positioned(
-            right: 0,
-            bottom: 0,
-            child: ImageUploader(
-              uid: _historyId!,
-              onImageSelected: (image) async {
-                setState(() => isLoading = true);
-                String? uploadedImageUrl =
-                    await uploadImage(_historyId!, image: image);
-                if (uploadedImageUrl != null) {
-                  setState(() {
-                    _imageUrl = uploadedImageUrl;
-                    isLoading = false;
-                  });
-                } else {
-                  setState(() => isLoading = false);
-                }
-              },
+          const SizedBox(height: 10),
+          Container(
+            decoration: BoxDecoration(
+                border: Border.all(color: Colors.black, width: 2),
+                borderRadius: BorderRadius.circular(20)),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                _colorImageURL != null
+                    ? Image.network(
+                        _colorImageURL!,
+                        width: size.width,
+                        height: size.height * 0.2,
+                        fit: BoxFit.fill,
+                        key: UniqueKey(),
+                      )
+                    : Image.asset(
+                        "assets/images/NoImagenColor.png",
+                        width: size.width,
+                        height: size.height * 0.2,
+                        fit: BoxFit.fill,
+                        key: UniqueKey(),
+                      ),
+                Positioned(
+                  right: 0,
+                  bottom: 0,
+                  child: ImageUploader(
+                    uid: _historyId!,
+                    onImageSelected: (image) async {
+                      setState(() => isLoading = true);
+                      String? uploadedImageUrl =
+                          await uploadImage(_historyId!, image: image, isGreyImage: false);
+                      if (uploadedImageUrl != null) {
+                        setState(() {
+                          _colorImageURL = uploadedImageUrl;
+                          isLoading = false;
+                        });
+                      } else {
+                        setState(() => isLoading = false);
+                      }
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -195,4 +268,3 @@ class _HistoryPageState extends State<HistoryPage> {
     );
   }
 }
-// Geppetto, un anciano carpintero, talla una marioneta a partir de un trozo especial de madera que él encuentra. El Nacimineto De Pinocho
