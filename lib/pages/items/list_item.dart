@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:pinocho/pages/data_database.dart';
 import 'package:pinocho/pages/home/home.dart';
 import 'package:pinocho/pages/items/item.dart';
 import 'package:pinocho/services/firebase_service_item.dart';
@@ -141,18 +142,36 @@ class _ListItemsState extends State<ListItems> {
           }
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const ItemsPage()),
-          ).then((_) {
-            setState(() {
-              getAllItems();
-            });
-          });
-        },
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+              child: const Icon(Icons.info),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const FieldsInfoPage(
+                        collection: 'items',
+                        documentId: "66NzEfZnSXpyrZb1Ftec"),
+                  ),
+                );
+              }),
+          const SizedBox(height: 10),
+          FloatingActionButton(
+            child: const Icon(Icons.add),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ItemsPage()),
+              ).then((_) {
+                setState(() {
+                  getAllItems();
+                });
+              });
+            },
+          ),
+        ],
       ),
     );
   }

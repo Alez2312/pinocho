@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:audioplayers/audioplayers.dart';
-import 'package:pinocho/pages/components/singleton.dart';
+import 'package:pinocho/pages/components/title_button.dart';
+import 'package:pinocho/pages/data_database.dart';
 import 'package:pinocho/pages/music.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -18,13 +18,21 @@ class _SettingsPageState extends State<SettingsPage> {
         title: const Text('Configuración'),
         backgroundColor: Colors.purple,
       ),
-      body: Column(
+      body: ListView(
         children: [
-          TextButton(
-              onPressed: () {
-                Navigator.pushNamed(context, MusicPage.RUTA);
-              },
-              child: const Text("Música"))
+          ListTile(
+            leading: const Icon(
+              Icons.music_note,
+              color: Colors.purple,
+              size: 25,
+            ),
+            title: const Text('Música',
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
+            onTap: () {
+              Navigator.pushNamed(context, MusicPage.RUTA);
+            },
+          ),
+          const Divider(),
         ],
       ),
     );

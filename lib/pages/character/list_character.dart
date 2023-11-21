@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:pinocho/pages/character/character.dart';
 import 'package:pinocho/pages/components/confirmation_dialog.dart';
+import 'package:pinocho/pages/data_database.dart';
 import 'package:pinocho/pages/home/home.dart';
 import 'package:pinocho/services/firebase_service_character.dart';
 
@@ -106,18 +107,36 @@ class _ListCharactersState extends State<ListCharacters> {
           }
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const CharactersPage()),
-          ).then((_) {
-            setState(() {
-              getAllCharacters();
-            });
-          });
-        },
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+              child: const Icon(Icons.info),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const FieldsInfoPage(
+                        collection: 'characters',
+                        documentId: "L2w5OwRfxBJxSUmKfEXu"),
+                  ),
+                );
+              }),
+          const SizedBox(height: 10),
+          FloatingActionButton(
+            child: const Icon(Icons.add),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const CharactersPage()),
+              ).then((_) {
+                setState(() {
+                  getAllCharacters();
+                });
+              });
+            },
+          ),
+        ],
       ),
     );
   }

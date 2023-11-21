@@ -5,9 +5,27 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/services.dart';
 
+import '../model/field_info.dart';
+
 FirebaseFirestore db = FirebaseFirestore.instance;
 
 FirebaseAuth _auth = FirebaseAuth.instance;
+
+Future<List<FieldInfo>> getFieldsInfo(String collection, String documentId) async {
+  List<FieldInfo> fields = [];
+
+  DocumentSnapshot docSnapshot = await db.collection(collection).doc(documentId).get();
+
+  if (docSnapshot.exists) {
+    Map<String, dynamic> data = docSnapshot.data() as Map<String, dynamic>;
+    data.forEach((key, value) {
+      String type = value.runtimeType.toString();
+      fields.add(FieldInfo(name: key, type: type));
+    });
+  }
+
+  return fields;
+}
 
 // Método para obtener todos los usuarios.
 Future<List> getUsers() async {

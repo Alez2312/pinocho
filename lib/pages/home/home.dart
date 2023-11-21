@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pinocho/pages/data_database.dart';
 import 'package:pinocho/pages/history.dart';
 import 'package:pinocho/pages/home/home_drawer.dart';
 import 'package:pinocho/pages/home/home_history.dart';
@@ -38,18 +39,36 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
       ),
       body: HistoryList(uid: uid!),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const HistoryPage()),
-          ).then((_) {
-            setState(() {
-              getAllHistories();
-            });
-          });
-        },
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+              child: const Icon(Icons.info),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const FieldsInfoPage(
+                        collection: 'histories',
+                        documentId: "fzSgRNB2iV0e3CSeDx5Z"),
+                  ),
+                );
+              }),
+          const SizedBox(height: 10),
+          FloatingActionButton(
+            child: const Icon(Icons.add),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const HistoryPage()),
+              ).then((_) {
+                setState(() {
+                  getAllHistories();
+                });
+              });
+            },
+          ),
+        ],
       ),
       drawer: FutureBuilder<Map<String, dynamic>>(
         future: getUserByID(uid!),
@@ -71,4 +90,3 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-

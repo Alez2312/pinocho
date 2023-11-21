@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:pinocho/pages/achievements.dart';
 import 'package:pinocho/pages/character/list_character.dart';
+import 'package:pinocho/pages/data_database.dart';
 import 'package:pinocho/pages/items/list_item.dart';
 import 'package:pinocho/pages/laboratory.dart';
 import 'package:pinocho/pages/claim_reward.dart';
