@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:pinocho/pages/components/confirmation_dialog.dart';
-import 'package:pinocho/pages/history.dart';
 import 'package:pinocho/services/firebase_service_achievement.dart';
 import 'package:pinocho/services/firebase_service_character.dart';
 import 'package:pinocho/services/firebase_service_history.dart';
@@ -78,37 +77,7 @@ class _HistoryListState extends State<HistoryList> {
                           color: Colors.white, fontWeight: FontWeight.w500),
                     ),
                     contentPadding: const EdgeInsets.all(16.0),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          color: Colors.orange,
-                          icon: const Icon(Icons.edit, size: 35),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => HistoryPage(
-                                  history: history,
-                                ),
-                              ),
-                            ).then((_) {
-                              setState(() {
-                                getAllHistories();
-                              });
-                            });
-                          },
-                        ),
-                        IconButton(
-                          color: Colors.red,
-                          icon: const Icon(Icons.delete, size: 35),
-                          onPressed: () {
-                            _showMyDialog(history['id']);
-                          },
-                        ),
-                      ],
                     ),
-                  ),
                 ),
               );
             },

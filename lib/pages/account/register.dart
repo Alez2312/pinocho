@@ -39,6 +39,7 @@ class _RegisterState extends State<Register> {
   String? stateValue = "";
   String? cityValue = "";
   bool _isPasswordVisible = false;
+  bool _isLoggingIn = false;
   SelectedGender? _selectedGender = SelectedGender.Masculino;
 
   @override
@@ -57,6 +58,10 @@ class _RegisterState extends State<Register> {
     String? country = countryValue;
     String? state = stateValue;
     String? city = cityValue;
+
+    setState(() {
+      _isLoggingIn = true;
+    });
 
     if (state != null) {
       state = state.replaceAll(" Department", "");
@@ -86,6 +91,9 @@ class _RegisterState extends State<Register> {
         );
       }
     }
+    setState(() {
+      _isLoggingIn = false;
+    });
   }
 
   @override
@@ -319,16 +327,32 @@ class _RegisterState extends State<Register> {
                       ),
                       const SizedBox(height: 10.0),
                       ElevatedButton(
-                        onPressed: () {
-                          _registerAndCreateProfile();
-                        },
+                        onPressed:
+                            _isLoggingIn ? null : _registerAndCreateProfile,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.purple,
+                          backgroundColor:
+                              _isLoggingIn ? Colors.grey : Colors.purple,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        child: const Text('Registrar'),
+                        child: _isLoggingIn
+                      ? const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(color: Colors.white),
+                            SizedBox(width: 24),
+                            Text(
+                              'Registrandote...',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 18),
+                            ),
+                          ],
+                        )
+                      : const Text(
+                          'Registrar',
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        ),
                       ),
                       Container(
                         padding: const EdgeInsets.all(8.0),

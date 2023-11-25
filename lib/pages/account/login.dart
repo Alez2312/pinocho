@@ -1,6 +1,4 @@
-
-
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, library_private_types_in_public_api
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -32,20 +30,25 @@ class _LoginState extends State<Login> {
   bool _emailError = false;
   bool _passwordError = false;
   bool _isPasswordVisible = false;
+  bool _isLoggingIn = false;
 
 // Maneja el proceso de inicio de sesión.
   void _handleLogin() async {
     String email = _emailController.text;
     String password = _passwordController.text;
+    setState(() {
+      _isLoggingIn = true;
+    });
 
 // Verifica si los campos están vacíos y actualiza el estado de los errores.
     if (email.isEmpty || password.isEmpty) {
-      
       setState(() {
         _emailError = email.isEmpty;
         _passwordError = password.isEmpty;
       });
-      return;
+      setState(() {
+        _isLoggingIn = false;
+      });
     }
 
 // Intenta iniciar sesión y navega a la página de inicio si tiene éxito.
@@ -73,6 +76,9 @@ class _LoginState extends State<Login> {
           );
         },
       );
+      setState(() {
+        _isLoggingIn = false;
+      });
     }
   }
 
@@ -180,17 +186,30 @@ class _LoginState extends State<Login> {
                 ),
                 const SizedBox(height: 16.0),
                 ElevatedButton(
-                  onPressed: _handleLogin,
+                  onPressed: _isLoggingIn ? null : _handleLogin,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.purple,
+                    backgroundColor: _isLoggingIn ? Colors.grey : Colors.purple,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: const Text(
-                    'Iniciar Sesión',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
+                  child: _isLoggingIn
+                      ? const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(color: Colors.white),
+                            SizedBox(width: 24),
+                            Text(
+                              'Iniciando Sesión...',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 18),
+                            ),
+                          ],
+                        )
+                      : const Text(
+                          'Iniciar Sesión',
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        ),
                 ),
                 const SizedBox(height: 16.0),
                 Row(

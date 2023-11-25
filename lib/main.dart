@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:pinocho/pages/achievements.dart';
 import 'package:pinocho/pages/character/list_character.dart';
-import 'package:pinocho/pages/data_database.dart';
+import 'package:pinocho/pages/history/list_history.dart';
 import 'package:pinocho/pages/items/list_item.dart';
 import 'package:pinocho/pages/laboratory.dart';
 import 'package:pinocho/pages/claim_reward.dart';
@@ -36,6 +36,7 @@ class MyApp extends StatelessWidget {
         HomePage.RUTA: (context) => const HomePage(),
         LaboratoryPage.RUTA: (context) => const LaboratoryPage(),
         ListCharacters.RUTA: (context) => const ListCharacters(),
+        ListHistory.RUTA:(context) =>  ListHistory(),
         ListItems.RUTA: (context) => const ListItems(),
         Achievements.RUTA:(context) => const Achievements(),
         ClaimRewards.RUTA:(context) => const ClaimRewards(),

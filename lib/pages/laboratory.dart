@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pinocho/pages/character/list_character.dart';
+import 'package:pinocho/pages/history/list_history.dart';
 import 'package:pinocho/pages/items/list_item.dart';
 
 class LaboratoryPage extends StatelessWidget {
@@ -36,6 +37,14 @@ class LaboratoryPage extends StatelessWidget {
               Colors.pink,
               () {
                 Navigator.pushNamed(context, ListItems.RUTA);
+              },
+            ),
+            customCard(
+              'Historia',
+              'description Historia',
+              Colors.purple,
+              () {
+                Navigator.pushNamed(context, ListHistory.RUTA);
               },
             ),
           ],

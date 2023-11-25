@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
 import 'package:pinocho/pages/data_database.dart';
@@ -12,7 +12,6 @@ class ListItems extends StatefulWidget {
   static String RUTA = '/list_items';
 
   @override
-  // ignore: library_private_types_in_public_api
   _ListItemsState createState() => _ListItemsState();
 }
 
@@ -108,70 +107,57 @@ class _ListItemsState extends State<ListItems> {
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 final item = snapshot.data![index];
-                return ListTile(
-                  title: Text(item['name']),
-                  subtitle: Text(item['description']),
-                  leading: Image.network(item['image']),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        ItemsPage(item: item))).then((_) {
-                              setState(() {
-                                getAllItems();
-                              });
-                            });
-                          }),
-                      IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () {
-                          _showMyDialog(item['id']);
-                        },
+                return Column(
+                  children: [
+                    ListTile(
+                      title: Text(item['name']),
+                      subtitle: Text(item['description']),
+                      leading: Image.network(item['image']),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                              icon: const Icon(Icons.edit),
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            ItemsPage(item: item))).then((_) {
+                                  setState(() {
+                                    getAllItems();
+                                  });
+                                });
+                              }),
+                          IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () {
+                              _showMyDialog(item['id']);
+                            },
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    const Divider(color: Colors.black),
+                  ],
                 );
               },
             );
           }
         },
       ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton(
-              child: const Icon(Icons.info),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const FieldsInfoPage(
-                        collection: 'items',
-                        documentId: "66NzEfZnSXpyrZb1Ftec"),
-                  ),
-                );
-              }),
-          const SizedBox(height: 10),
-          FloatingActionButton(
-            child: const Icon(Icons.add),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ItemsPage()),
-              ).then((_) {
-                setState(() {
-                  getAllItems();
-                });
-              });
-            },
-          ),
-        ],
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ItemsPage()),
+          ).then((_) {
+            setState(() {
+              getAllItems();
+            });
+          });
+        },
       ),
     );
   }

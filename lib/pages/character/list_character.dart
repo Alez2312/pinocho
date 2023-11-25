@@ -73,70 +73,57 @@ class _ListCharactersState extends State<ListCharacters> {
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 final character = snapshot.data![index];
-                return ListTile(
-                  title: Text(character['name']),
-                  subtitle: Text(character['history']),
-                  leading: Image.network(character['image']),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => CharactersPage(
-                                        character: character))).then((_) {
-                              setState(() {
-                                getAllCharacters();
-                              });
-                            });
-                          }),
-                      IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () {
-                          _showMyDialog(character['id']);
-                        },
+                return Column(
+                  children: [
+                    ListTile(
+                      title: Text(character['name']),
+                      subtitle: Text(character['history']),
+                      leading: Image.network(character['image']),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                              icon: const Icon(Icons.edit),
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => CharactersPage(
+                                            character: character))).then((_) {
+                                  setState(() {
+                                    getAllCharacters();
+                                  });
+                                });
+                              }),
+                          IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () {
+                              _showMyDialog(character['id']);
+                            },
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    const Divider(color: Colors.black)
+                  ],
                 );
               },
             );
           }
         },
       ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton(
-              child: const Icon(Icons.info),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const FieldsInfoPage(
-                        collection: 'characters',
-                        documentId: "L2w5OwRfxBJxSUmKfEXu"),
-                  ),
-                );
-              }),
-          const SizedBox(height: 10),
-          FloatingActionButton(
-            child: const Icon(Icons.add),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const CharactersPage()),
-              ).then((_) {
-                setState(() {
-                  getAllCharacters();
-                });
-              });
-            },
-          ),
-        ],
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const CharactersPage()),
+          ).then((_) {
+            setState(() {
+              getAllCharacters();
+            });
+          });
+        },
       ),
     );
   }
